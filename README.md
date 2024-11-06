@@ -3,8 +3,8 @@
 ## 1.1 Building and running with python (requires python 3.7 minimum)
 
 To build and run the program, you need:
-- ```gcc``` or an equivalent C compiler (you can change compilation settings in build.py to setup a custom compiler, the default is ```gcc```)
-- a linker (if using a custom compiler), the default is ```ld``` although by default the program uses ```gcc```'s linking capabilities.
+- ```gcc``` or an equivalent C compiler (you can change compilation settings in ```build.py``` to setup a custom compiler, the default is ```gcc```)
+- a linker (if using a custom compiler), the default is ```ld``` but by default the program uses ```gcc```'s linking capabilities.
 - ```drawapp-4.0.jar``` to be located inside this root directory
 - ```graphics.c``` and ```graphics.h``` to be located inside ```./src/graphics/``` (They are already inside by default, adding this for completeness, see section 2.3)
 

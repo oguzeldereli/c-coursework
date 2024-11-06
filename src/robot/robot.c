@@ -43,6 +43,8 @@ uint8_t validate_robot(robot_t *robot)
     return 1;
 }
 
+// Function names are not formatted in snake_case but rather in camelCase to ensure completeness with instruction sheet
+
 void left(robot_t *robot)
 {
     if (validate_robot(robot))

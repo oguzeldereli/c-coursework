@@ -20,12 +20,14 @@ To run the executable, do
 
 To build and run, do:
 
+> ```python build.py -run                         : defaults to random generation```  
 > ```python build.py -run -random                 : randomly generates a maze```  
 > ```python build.py -run -file <filename>        : reads from a file format (see section 2.2)```  
 > ```python build.py -run -help                   : displays all possible commands```  
 
 To build, run, and pipe the output into ```drawapp```, do:
 
+> ```python build.py -run -draw                   : defaults to random generation```  
 > ```python build.py -run -draw -random           : randomly generates a maze```  
 > ```python build.py -run -draw -file <filename>  : reads from a file format (see section 2.2)```  
 
@@ -43,6 +45,7 @@ Link all files with ```gcc``` or ```ld```:
 
 Run the executable:
 
+> ```bin/<executable_name(.exe)>                  : default to random generation``` 
 > ```bin/<executable_name(.exe)> -random          : randomly generates a maze```  
 > ```bin/<executable_name(.exe)> -file <filename> : reads from a file format (see section 2.2)```  
 > ```bin/<executable_name(.exe)> -help            : displays all possible commands```  
@@ -51,7 +54,7 @@ Run the executable:
 
 ## 2.1 Folder structure
 
-The program consists of 5 folders, a build script (```build.py```), the drawing app (```drawapp-4.0.jar```), and this readme.md file.
+The program consists of 5 folders, a build script (```build.py```), the drawing app (```drawapp-4.0.jar```), and this ```readme.md``` file.
 
 > ```/bin``` folder contains the binary executable  
 > ```/logs``` folder contains the logs of the stdout for each run of the build script, categorized into days.  

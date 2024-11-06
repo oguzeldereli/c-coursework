@@ -5,6 +5,7 @@
 
 // Implementation details inspired from https://www.geeksforgeeks.org/a-search-algorithm/  
 
+// Idea to use manhattan distance from https://www.geeksforgeeks.org/a-search-algorithm/
 uint32_t heuristic(uint32_t x1, uint32_t y1, uint32_t x2, uint32_t y2)
 {
     return abs(x1 - x2) + abs(y1 - y2);

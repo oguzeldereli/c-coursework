@@ -1,6 +1,8 @@
 #include "../dynamicarray/dynamicarray.h"
 #include <stdlib.h>
 
+// Implementation detalis inspired from https://www.enjoyalgorithms.com/blog/dynamic-array   
+
 node_t *create_node(uint32_t x, uint32_t y, uint32_t g, uint32_t h, node_t *parent)
 {
     node_t *node = malloc(sizeof(node_t));

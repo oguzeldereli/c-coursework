@@ -185,6 +185,7 @@ void move_robot_in_directions(robot_t *robot, uint8_t *directions, int32_t size)
     }
 }
 
+// Idea to use manhattan distance from https://www.geeksforgeeks.org/a-search-algorithm/
 uint32_t manhattan_distance(int32_t x1, int32_t y1, int32_t x2, int32_t y2)
 {
     return abs(x1 - x2) + abs(y1 - y2);

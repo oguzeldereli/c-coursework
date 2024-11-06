@@ -133,3 +133,4 @@ There are a total of 9 source (```.c```) files within the project source folder 
 - A* search explanation: https://en.wikipedia.org/wiki/A*_search_algorithm#:~:text=A*%20is%20an%20informed%20search,shortest%20time%2C%20etc.).  
 - A* search implementation explanation: https://www.geeksforgeeks.org/a-search-algorithm/  
 - Graphics library + drawapp: Moodle  
+- Used ChatGPT o1-preview for refactoring tasks

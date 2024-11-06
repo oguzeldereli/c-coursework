@@ -3,11 +3,14 @@
 #include <string.h>
 #include <stdio.h>
 
+// Implementation details inspired from https://www.geeksforgeeks.org/a-search-algorithm/  
+
 uint32_t heuristic(uint32_t x1, uint32_t y1, uint32_t x2, uint32_t y2)
 {
     return abs(x1 - x2) + abs(y1 - y2);
 }
 
+// Refactored out from astar_search using ChatGPT-o1-preview, edited by me
 uint32_t allocate_nodes_and_closedList(uint32_t width, uint32_t height, node_t ****nodes, uint32_t ***closedList)
 {
     node_t ***localNodes = malloc(width * sizeof(node_t **));
@@ -32,6 +35,7 @@ uint32_t allocate_nodes_and_closedList(uint32_t width, uint32_t height, node_t *
     return 1;
 }
 
+// Refactored out from astar_search using ChatGPT-o1-preview, edited by me
 void free_nodes_and_closedList(uint32_t width, uint32_t height, node_t ***nodes, uint32_t **closedList, node_t *path)
 {
     for (uint32_t i = 0; i < width; i++)
@@ -63,6 +67,7 @@ void free_nodes_and_closedList(uint32_t width, uint32_t height, node_t ***nodes,
     free(closedList);
 }
 
+// Refactored out from astar_search using ChatGPT-o1-preview, edited by me
 void process_neighbor(node_t *current, int32_t nx, int32_t ny, node_t ***nodes, uint32_t **closedList, min_heap_t *openList, arena_t *arena, uint32_t goalX, uint32_t goalY, uint32_t width, uint32_t height)
 {
     if (nx < 0 || ny < 0 || nx >= width || ny >= height)

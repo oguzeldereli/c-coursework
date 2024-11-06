@@ -81,7 +81,7 @@ nth_non_existent_tile_x nth_non_existent_tile_y
 robot_home_x robot_home_y robot_start_x robot_start_y robot_initial_direction robot_border_color_0rgb robot_fill_color_0rgb\
 ```
 
-# 2.3 Source file explanations
+## 2.3 Source file explanations
 
 There are a total of 9 source (```.c```) files within the project source folder (```src/```) each with a associated header (```.h```) file.
 

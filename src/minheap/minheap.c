@@ -1,6 +1,8 @@
 #include "../minheap/minheap.h"
 #include <stdlib.h>
 
+// Implementation details inspired from https://www.geeksforgeeks.org/introduction-to-min-heap-data-structure/   
+
 uint32_t mh_parent_index(uint32_t i)
 {
     return (i - 1) / 2;

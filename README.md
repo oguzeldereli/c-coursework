@@ -112,7 +112,7 @@ There are a total of 9 source (```.c```) files within the project source folder 
 > ```main.c``` : Handles arguments and inputs, creates a maze, and solves the maze  
 > ```defaults.h``` : Default values to be used in case of random maze generation  
 
-# 2.4 Program Flow
+## 2.4 Program Flow
 
 1. The program either receives pre-prepared maze settings from a file or generates a random one using the default values in defaults.h.
     1. If the input is invalid or a internal error occurs during random maze generation, program informs the user and exits.

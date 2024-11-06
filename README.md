@@ -67,13 +67,13 @@ When inputting through a file, the program uses the following file format:
 ```
 arena_width arena_height arena_padding_size arena_background_color_0rgb arena_pixel_per_block_side
 arena_marker_count
-For the next <arena_marker_count> lines:
+For the next <arena_marker_count> lines: (DO NOT INCLUDE THIS LINE)
 nth_marker_x nth_marker_y
 arena_obstacle_count
-For the next <arena_obstacle_count> lines:
+For the next <arena_obstacle_count> lines: (DO NOT INCLUDE THIS LINE)
 nth_obstacle_x nth_obstacle_y
 arena_non_existent_tile_count
-For the next <arena_non_existent_tile_count> lines:
+For the next <arena_non_existent_tile_count> lines: (DO NOT INCLUDE THIS LINE)
 nth_non_existent_tile_x nth_non_existent_tile_y
 robot_home_x robot_home_y robot_start_x robot_start_y robot_initial_direction robot_border_color_0rgb robot_fill_color_0rgb\
 ```

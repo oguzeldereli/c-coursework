@@ -8,31 +8,113 @@ uint32_t heuristic(uint32_t x1, uint32_t y1, uint32_t x2, uint32_t y2)
     return abs(x1 - x2) + abs(y1 - y2);
 }
 
-node_t *astar_search(arena_t *arena, uint32_t startX, uint32_t startY, uint32_t goalX, uint32_t goalY)
+uint32_t allocate_nodes_and_closedList(uint32_t width, uint32_t height, node_t ****nodes, uint32_t ***closedList)
 {
-    uint32_t width = arena->width;
-    uint32_t height = arena->height;
-
-    node_t ***nodes = malloc(width * sizeof(node_t **));
-    uint32_t **closedList = malloc(width * sizeof(uint32_t *));
-    if (!nodes || !closedList)
+    node_t ***localNodes = malloc(width * sizeof(node_t **));
+    uint32_t **localClosedList = malloc(width * sizeof(uint32_t *));
+    if (!localNodes || !localClosedList)
     {
         return 0;
     }
 
-    for (int i = 0; i < width; i++)
+    for (uint32_t i = 0; i < width; i++)
     {
-        nodes[i] = calloc(height, sizeof(node_t *));
-        closedList[i] = calloc(height, sizeof(uint32_t));
-        if (!nodes[i] || !closedList[i])
+        localNodes[i] = calloc(height, sizeof(node_t *));
+        localClosedList[i] = calloc(height, sizeof(uint32_t));
+        if (!localNodes[i] || !localClosedList[i])
         {
             return 0;
         }
     }
 
+    *nodes = localNodes;
+    *closedList = localClosedList;
+    return 1;
+}
+
+void free_nodes_and_closedList(uint32_t width, uint32_t height, node_t ***nodes, uint32_t **closedList, node_t *path)
+{
+    for (uint32_t i = 0; i < width; i++)
+    {
+        for (uint32_t j = 0; j < height; j++)
+        {
+            int32_t isInPath = 0;
+            node_t *pathIterator = path;
+            while (pathIterator != 0)
+            {
+                if (nodes[i][j] && nodes[i][j] == pathIterator)
+                {
+                    isInPath = 1;
+                    break;
+                }
+                pathIterator = pathIterator->parent;
+            }
+
+            if (isInPath == 0)
+            {
+                free(nodes[i][j]);
+            }
+        }
+        free(nodes[i]);
+        free(closedList[i]);
+    }
+
+    free(nodes);
+    free(closedList);
+}
+
+void process_neighbor(node_t *current, int32_t nx, int32_t ny, node_t ***nodes, uint32_t **closedList, min_heap_t *openList, arena_t *arena, uint32_t goalX, uint32_t goalY, uint32_t width, uint32_t height)
+{
+    if (nx < 0 || ny < 0 || nx >= width || ny >= height)
+    {
+        return;
+    }
+
+    if (closedList[nx][ny] || get_tile(arena, nx, ny) == 0x01 || get_tile(arena, nx, ny) == 0xFF)
+    {
+        return;
+    }
+
+    uint32_t g = current->g + 1;
+    uint32_t h = heuristic(nx, ny, goalX, goalY);
+    uint32_t f = g + h;
+
+    node_t *neighbor = nodes[nx][ny];
+    if (neighbor == 0)
+    {
+        neighbor = create_node(nx, ny, g, h, current);
+        nodes[nx][ny] = neighbor;
+        mh_insert(openList, neighbor);
+    }
+    else
+    {
+        if (g < neighbor->g)
+        {
+            neighbor->g = g;
+            neighbor->h = h;
+            neighbor->f = f;
+            neighbor->parent = current;
+            mh_decrease_key(openList, neighbor->heapIndex, neighbor->f);
+        }
+    }
+}
+
+node_t *astar_search(arena_t *arena, uint32_t startX, uint32_t startY, uint32_t goalX, uint32_t goalY)
+{
+    uint32_t width = arena->width;
+    uint32_t height = arena->height;
+
+    node_t ***nodes = 0;
+    uint32_t **closedList = 0;
+    if (!allocate_nodes_and_closedList(width, height, &nodes, &closedList))
+    {
+        return 0;
+    }
+
     min_heap_t *openList = create_min_heap(64);
     if (!openList)
     {
+        free_nodes_and_closedList(width, height, nodes, closedList, 0);
         return 0;
     }
 
@@ -60,35 +142,7 @@ node_t *astar_search(arena_t *arena, uint32_t startX, uint32_t startY, uint32_t 
         {
             int32_t nx = current->x + neighbors[i][0];
             int32_t ny = current->y + neighbors[i][1];
-
-            if (nx < 0 || ny < 0 || nx >= width || ny >= height)
-                continue;
-
-            if (closedList[nx][ny] || get_tile(arena, nx, ny) == 0x01 || get_tile(arena, nx, ny) == 0xFF)
-                continue;
-
-            uint32_t g = current->g + 1;
-            uint32_t h = heuristic(nx, ny, goalX, goalY);
-            uint32_t f = g + h;
-
-            node_t *neighbor = nodes[nx][ny];
-            if (neighbor == 0)
-            {
-                neighbor = create_node(nx, ny, g, h, current);
-                nodes[nx][ny] = neighbor;
-                mh_insert(openList, neighbor);
-            }
-            else
-            {
-                if (g < neighbor->g)
-                {
-                    neighbor->g = g;
-                    neighbor->h = h;
-                    neighbor->f = f;
-                    neighbor->parent = current;
-                    mh_decrease_key(openList, neighbor->heapIndex, neighbor->f);
-                }
-            }
+            process_neighbor(current, nx, ny, nodes, closedList, openList, arena, goalX, goalY, width, height);
         }
     }
 
@@ -98,33 +152,7 @@ node_t *astar_search(arena_t *arena, uint32_t startX, uint32_t startY, uint32_t 
         path = current;
     }
 
-    for (uint32_t i = 0; i < width; i++)
-    {
-        for (uint32_t j = 0; j < height; j++)
-        {
-            int32_t isInPath = 0;
-            node_t *path_iterator = path;
-            while(path_iterator != 0)
-            {
-                if(nodes[i][j] && nodes[i][j] == path_iterator)
-                {
-                    isInPath = 1;
-                    break;
-                }
-                path_iterator = path_iterator->parent;
-            }
-
-            if (isInPath == 0)
-            {
-                free(nodes[i][j]);
-            }
-        }
-        free(nodes[i]);
-        free(closedList[i]);
-    }
-
-    free(nodes);
-    free(closedList);
+    free_nodes_and_closedList(width, height, nodes, closedList, path);
     dispose_min_heap(openList);
 
     return path;
@@ -137,12 +165,12 @@ void free_path(node_t *goal)
         return;
     }
 
-    node_t *path_iterator = goal;
-    while(path_iterator != 0)
+    node_t *pathIterator = goal;
+    while(pathIterator != 0)
     {
-        node_t * next = path_iterator->parent;
-        free(path_iterator);
-        path_iterator = next;
+        node_t * next = pathIterator->parent;
+        free(pathIterator);
+        pathIterator = next;
     }
 }
 

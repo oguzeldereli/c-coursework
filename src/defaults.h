@@ -1,0 +1,14 @@
+#ifndef __DEFAULTS_H__
+#define __DEFAULTS_H__
+
+#define MIN_WIDTH 10
+#define MAX_WIDTH 35
+#define MIN_HEIGHT 10
+#define MAX_HEIGHT 30
+#define PADDING_SIZE 32
+#define BACKGROUND_COLOR 0x6da37c
+#define PIXEL_PER_SIDE 32
+#define ROBOT_BORDER_COLOR 0x172269
+#define ROBOT_FILL_COLOR 0x31409e
+
+#endif

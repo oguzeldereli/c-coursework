@@ -91,7 +91,7 @@ There are a total of 9 source (```.c```) files within the project source folder 
 > ```dynamicarray/dynamicarray.c``` : A dynamic array implementation which works on node_t pointers.  
 > ```dynamicarray/dynamicarray.h``` : Defines dynamic_array_t and node_t structs, and declares functions  
 
-> ```graphics/graphics.c``` : Essentially middleware for drawapp. Unchanged from the moodle version. I am including this despite the fact that the instructions tell us not to include it to ensure that the program builds and runs without extra preparation than necessary.  
+> ```graphics/graphics.c``` : Essentially middleware for drawapp. Unchanged from the moodle version. I am including this despite the fact that the instructions tell us not to include it to ensure that the program builds and runs without more preparation than necessary.  
 > ```graphics/graphics.h``` : Declares drawing functions.  
 
 > ```maze/maze.c``` : Coordinates the drawing and interactions of the robot and the arena to solve the maze.  
@@ -125,8 +125,8 @@ There are a total of 9 source (```.c```) files within the project source folder 
 
 # Section 3 - References
 
-Dynamic array: https://www.enjoyalgorithms.com/blog/dynamic-array   
-Min-Heap: https://www.geeksforgeeks.org/introduction-to-min-heap-data-structure/  
-A* search explanation: https://en.wikipedia.org/wiki/A*_search_algorithm#:~:text=A*%20is%20an%20informed%20search,shortest%20time%2C%20etc.).  
-A* search implementation explanation: https://www.geeksforgeeks.org/a-search-algorithm/  
-Graphics library + drawapp: Moodle  
+- Dynamic array: https://www.enjoyalgorithms.com/blog/dynamic-array   
+- Min-Heap: https://www.geeksforgeeks.org/introduction-to-min-heap-data-structure/  
+- A* search explanation: https://en.wikipedia.org/wiki/A*_search_algorithm#:~:text=A*%20is%20an%20informed%20search,shortest%20time%2C%20etc.).  
+- A* search implementation explanation: https://www.geeksforgeeks.org/a-search-algorithm/  
+- Graphics library + drawapp: Moodle  

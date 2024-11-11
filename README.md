@@ -69,7 +69,8 @@ Link all files with `gcc` or `ld`:
 
 Run the executable:
 
-> `bin/<executable_name(.exe)>                  : default to random generation` > `bin/<executable_name(.exe)> -random          : randomly generates a maze`  
+> `bin/<executable_name(.exe)>                  : default to random generation`
+> `bin/<executable_name(.exe)> -random          : randomly generates a maze`  
 > `bin/<executable_name(.exe)> -file <filename> : reads from a file format (see section 2.3)`  
 > `bin/<executable_name(.exe)> -help            : displays all possible commands`
 

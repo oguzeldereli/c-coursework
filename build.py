@@ -137,6 +137,8 @@ def run(draw):
                     print(f"Error: {error}")
                 return output
     else:
+        if not check_file(drawapp):
+            print("Drawapp not found, make sure it is in the same directory as this build script. Running without drawing:")
         return run_shell(executable, run_arguments)
 
 def log_output(output):

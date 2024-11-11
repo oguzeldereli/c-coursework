@@ -24,7 +24,7 @@ This program is designed to generate and solve mazes using a simulated robotic a
 
 To build and run the program, you need:
 - ```gcc``` 
-- ```drawapp-4.0.jar``` to be located inside this root directory
+- ```drawapp-4.0.jar``` to be located inside the root directory ()
 - ```graphics.c``` and ```graphics.h``` to be located inside ```./src/graphics/``` (They are already inside by default to ensure that the program compiles out of the box)
 
 To build, do:
@@ -71,7 +71,7 @@ Run the executable:
 
 ## 2.3 File input format
 
-When inputting through a file, the program uses the following file format, an example is found in /testFiles/test_1.txt:
+When inputting through a file, the program uses the following file format, an example is found in ```/testFiles/test_1.txt```:
 
 ```
 arena_width arena_height arena_padding_size arena_background_color_0rgb arena_pixel_per_block_side max_obstacle_area_percentage max_marker_area_percentage

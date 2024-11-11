@@ -28,7 +28,7 @@ To build and run the program, you need:
 - `drawapp-4.0.jar` to be located inside the root directory ()
 - `graphics.c` and `graphics.h` to be located inside `./src/graphics/` (They are already inside by default to ensure that the program compiles out of the box, they are unchanged from the Moodle version)
 
-All warnings and notes are treated as errors during compilation. On my Windows 11 machine and MacBook there are neither warnings nor notes. If it happens to be that you have warnings or errors, they might have to be ammended before compilation can proceed.
+All warnings and notes are treated as errors during compilation. On my Windows 11 machine and MacBook there are neither warnings nor notes. If it happens to be that you have warnings or notes, they might have to be ammended before compilation can proceed.
 
 When using the build script, **you need to run your shell inside the same directory as the build script and specify the filenames relative to the build script as well**.
 

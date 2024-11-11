@@ -25,7 +25,7 @@ This program is designed to generate and solve mazes using a simulated robotic a
 To build and run the program, you need:
 - ```gcc``` 
 - ```drawapp-4.0.jar``` to be located inside the root directory ()
-- ```graphics.c``` and ```graphics.h``` to be located inside ```./src/graphics/``` (They are already inside by default to ensure that the program compiles out of the box)
+- ```graphics.c``` and ```graphics.h``` to be located inside ```./src/graphics/``` (They are already inside by default to ensure that the program compiles out of the box, they are unchanged from the Moodle version)
 
 To build, do:
 

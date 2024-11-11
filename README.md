@@ -52,6 +52,8 @@ To build, run, and pipe the output into ```drawapp```, do:
 
 When using the build script, **you need to run your shell inside the same directory as the build script and specify the filenames relative to the build script as well**.
 
+If the randomly generated height for the maze is too big for your screen, change the MAX_HEIGHT in defaults.h.
+
 ## 2.2 Building and running without python
 
 Compile each source file into an object file:

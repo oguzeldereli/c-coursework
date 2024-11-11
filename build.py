@@ -95,7 +95,7 @@ def get_object_filename(path_to_c_file):
     return get_filename(path_to_c_file).replace(".c", ".o")
 
 def make_object(path_to_c_file):
-    return run_shell(cc, ["-Wall", "-o", f"{object_output}/{get_object_filename(path_to_c_file)}", "-c", path_to_c_file])
+    return run_shell(cc, ["-o", f"{object_output}/{get_object_filename(path_to_c_file)}", "-c", path_to_c_file])
 
 def link_files(object_dir, output_filename):
     object_files = [os.path.join(object_dir, f) for f in os.listdir(object_dir) if f.endswith('.o')]

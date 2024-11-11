@@ -11,22 +11,22 @@ int interpret_argv(int argc, char **argv)
     // 1 is file
     int mode = 0;
     char *filename = 0;
-    if(argc == 1)
+    if (argc == 1)
     {
         mode = 0;
     }
-    else if(argc == 2)
+    else if (argc == 2)
     {
-        if(strcmp(argv[1], "-random") == 0)
+        if (strcmp(argv[1], "-random") == 0)
         {
             mode = 0;
         }
-        else if(strcmp(argv[1], "-file") == 0)
+        else if (strcmp(argv[1], "-file") == 0)
         {
             printf("Missing file name\n");
             return -1;
         }
-        else if(strcmp(argv[1], "-help") == 0)
+        else if (strcmp(argv[1], "-help") == 0)
         {
             printf("%s -random          : generates random maze and solves it\n", argv[0]);
             printf("%s -file <filename> : generates maze from filename and solves it\n", argv[0]);
@@ -39,14 +39,14 @@ int interpret_argv(int argc, char **argv)
             return -1;
         }
     }
-    else if(argc == 3)
+    else if (argc == 3)
     {
-        if(strcmp(argv[1], "-file") == 0)
+        if (strcmp(argv[1], "-file") == 0)
         {
             mode = 1;
             filename = argv[2];
-            FILE *file = fopen(filename, "r"); 
-            if (file == 0) 
+            FILE *file = fopen(filename, "r");
+            if (file == 0)
             {
                 printf("Invalid file or filename.\n");
                 return -1;
@@ -70,24 +70,24 @@ int interpret_argv(int argc, char **argv)
 
 maze_settings_t read_settings_from_file(char *filename)
 {
-    maze_settings_t settings;
-    FILE *file = fopen(filename, "r"); 
-    if (file == 0) 
+    maze_settings_t settings = {0};
+    FILE *file = fopen(filename, "r");
+    if (file == 0)
     {
         printf("Invalid file or filename.\n");
         return settings;
     }
 
     fscanf(file, "%u %u %u %x %u", &settings.width, &settings.height, &settings.paddingSize, &settings.backgroundColor0RGB, &settings.pixelPerSide);
-    
+
     fscanf(file, "%u", &settings.markerCount);
-    if(settings.markerCount > 0)
+    if (settings.markerCount > 0)
     {
         settings.markersX = malloc(settings.markerCount * sizeof(uint32_t));
         settings.markersY = malloc(settings.markerCount * sizeof(uint32_t));
     }
-    
-    for(int i = 0; i < settings.markerCount; i++)
+
+    for (int i = 0; i < settings.markerCount; i++)
     {
         uint32_t x = 0, y = 0;
         fscanf(file, "%u %u", &x, &y);
@@ -96,13 +96,13 @@ maze_settings_t read_settings_from_file(char *filename)
     }
 
     fscanf(file, "%u", &settings.obstacleCount);
-    if(settings.obstacleCount > 0)
+    if (settings.obstacleCount > 0)
     {
         settings.obstaclesX = malloc(settings.obstacleCount * sizeof(uint32_t));
         settings.obstaclesY = malloc(settings.obstacleCount * sizeof(uint32_t));
     }
-    
-    for(int i = 0; i < settings.obstacleCount; i++)
+
+    for (int i = 0; i < settings.obstacleCount; i++)
     {
         uint32_t x = 0, y = 0;
         fscanf(file, "%u %u", &x, &y);
@@ -111,13 +111,13 @@ maze_settings_t read_settings_from_file(char *filename)
     }
 
     fscanf(file, "%u", &settings.nonExistentCount);
-    if(settings.nonExistentCount > 0)
+    if (settings.nonExistentCount > 0)
     {
         settings.nonExistentX = malloc(settings.nonExistentCount * sizeof(uint32_t));
         settings.nonExistentY = malloc(settings.nonExistentCount * sizeof(uint32_t));
     }
-    
-    for(int i = 0; i < settings.nonExistentCount; i++)
+
+    for (int i = 0; i < settings.nonExistentCount; i++)
     {
         uint32_t x = 0, y = 0;
         fscanf(file, "%u %u", &x, &y);
@@ -134,20 +134,25 @@ maze_settings_t read_settings_from_file(char *filename)
 
 maze_settings_t get_settings(int mode, char *filename)
 {
-    maze_settings_t settings;
+    maze_settings_t settings = {0};
 
-    if(mode == 0)
+    if (mode == 0)
     {
         settings = generate_random_maze(MIN_WIDTH, MAX_WIDTH, MIN_HEIGHT, MAX_HEIGHT, PADDING_SIZE, BACKGROUND_COLOR, PIXEL_PER_SIDE, MAX_OBSTACLE_AREA_PERCENTAGE, MAX_MARKER_AREA_PERCENTAGE, ROBOT_BORDER_COLOR, ROBOT_FILL_COLOR);
     }
-    else if(mode == 1)
+    else if (mode == 1)
     {
         settings = read_settings_from_file(filename);
     }
-
-    if(!validate_maze_settings(settings))
+    else
     {
-        if(mode == 1)
+        printf("Invalid mode.\n");
+        exit(0);
+    }
+
+    if (!validate_maze_settings(settings))
+    {
+        if (mode == 1)
         {
             printf("Invalid input format.\n");
             exit(0);
@@ -163,19 +168,19 @@ maze_settings_t get_settings(int mode, char *filename)
 }
 
 int main(int argc, char **argv)
-{  
+{
     // Get input mode
     int mode = interpret_argv(argc, argv);
     char *filename = 0; // input file name if any
 
-    if(mode == 1)
+    if (mode == 1)
     {
         filename = argv[2];
     }
 
     maze_settings_t settings = get_settings(mode, filename);
-    maze_t * maze = create_maze(settings);
-    if(!validate_maze(maze))
+    maze_t *maze = create_maze(settings);
+    if (!validate_maze(maze))
     {
         printf("Internal error or invalid input.\n");
         return 0;

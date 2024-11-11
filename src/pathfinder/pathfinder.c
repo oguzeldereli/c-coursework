@@ -3,10 +3,10 @@
 #include <string.h>
 #include <stdio.h>
 
-// Implementation details inspired from https://www.geeksforgeeks.org/a-search-algorithm/  
+// Implementation details inspired from https://www.geeksforgeeks.org/a-search-algorithm/
 
 // Idea to use manhattan distance from https://www.geeksforgeeks.org/a-search-algorithm/
-uint32_t heuristic(uint32_t x1, uint32_t y1, uint32_t x2, uint32_t y2)
+uint32_t heuristic(int32_t x1, int32_t y1, int32_t x2, int32_t y2)
 {
     return abs(x1 - x2) + abs(y1 - y2);
 }
@@ -143,7 +143,7 @@ node_t *astar_search(arena_t *arena, uint32_t startX, uint32_t startY, uint32_t 
             break;
         }
 
-        int32_t neighbors[4][2] = {{0,1}, {1,0}, {0,-1}, {-1,0}};
+        int32_t neighbors[4][2] = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
         for (int32_t i = 0; i < 4; i++)
         {
             int32_t nx = current->x + neighbors[i][0];
@@ -166,15 +166,15 @@ node_t *astar_search(arena_t *arena, uint32_t startX, uint32_t startY, uint32_t 
 
 void free_path(node_t *goal)
 {
-    if(!goal)
+    if (!goal)
     {
         return;
     }
 
     node_t *pathIterator = goal;
-    while(pathIterator != 0)
+    while (pathIterator != 0)
     {
-        node_t * next = pathIterator->parent;
+        node_t *next = pathIterator->parent;
         free(pathIterator);
         pathIterator = next;
     }

@@ -1,12 +1,31 @@
-# Section 1 - Building and Running
+# Section 1 - Program Explanation
 
-## 1.1 Building and running with python (requires python 3.7 minimum)
+## 2.1 Overview
+
+This program is designed to generate and solve mazes using a simulated robotic agent. The robot navigates through obstacles, locates markers scattered throughout the maze using the A* search algorithm, and collects them before returning to its home position. The program can either generate a random maze based on predefined defaults or accept a maze configuration from a file in a specified format. 
+
+## 2.2 Program Flow
+
+1. The program either receives pre-prepared maze settings from a file or generates a random one using the default values in defaults.h.
+    1. If the input is invalid or a internal error occurs during random maze generation, program informs the user and exits.
+2. The program creates a maze based on the settings from step (1).
+    1. The program informs the user and exits if the maze generated from the settings is invalid.
+3. The program attemps to solve the maze.
+    1. The program gets the coordinates of the closest marker to the robot.
+    2. The program calculates the shortest distance path between the marker and the robot using A* search.
+    3. The robot goes to the closest marker by following the pre-calculated path and picks up the marker.
+    4. These steps are repeated until all markers are collected or until an error occurs.
+    5. Once all markers are collected, the robot returns to the home square and drops the markers, terminating the program.
+    6. If any error occurs during this phase, the robot attempts to return to the home square and terminates the program.
+
+# Section 2 - Building and Running
+
+## 2.1 Building and running with python (requires python 3.7 minimum)
 
 To build and run the program, you need:
-- ```gcc``` or an equivalent C compiler (you can change compilation settings in ```build.py``` to setup a custom compiler, the default is ```gcc```)
-- a linker (if using a custom compiler), the default is ```ld``` but by default the program uses ```gcc```'s linking capabilities.
+- ```gcc``` 
 - ```drawapp-4.0.jar``` to be located inside this root directory
-- ```graphics.c``` and ```graphics.h``` to be located inside ```./src/graphics/``` (They are already inside by default, adding this for completeness, see section 2.3)
+- ```graphics.c``` and ```graphics.h``` to be located inside ```./src/graphics/``` (They are already inside by default to ensure that the program compiles out of the box)
 
 To build, do:
 
@@ -15,25 +34,25 @@ To build, do:
 To run the executable, do
 
 > ```bin/c-coursework(.exe) -random               : randomly generates a maze```  
-> ```bin/c-coursework(.exe) -file <filename>      : reads from a file format (see section 2.2)```  
+> ```bin/c-coursework(.exe) -file <filename>      : reads from a file format (see section 2.3)```  
 > ```bin/c-coursework(.exe) -help                 : displays all possible commands```  
 
 To build and run, do:
 
 > ```python build.py -run                         : defaults to random generation```  
 > ```python build.py -run -random                 : randomly generates a maze```  
-> ```python build.py -run -file <filename>        : reads from a file format (see section 2.2)```  
+> ```python build.py -run -file <filename>        : reads from a file format (see section 2.3).```  
 > ```python build.py -run -help                   : displays all possible commands```  
 
 To build, run, and pipe the output into ```drawapp```, do:
 
 > ```python build.py -run -draw                   : defaults to random generation```  
 > ```python build.py -run -draw -random           : randomly generates a maze```  
-> ```python build.py -run -draw -file <filename>  : reads from a file format (see section 2.2)```  
+> ```python build.py -run -draw -file <filename>  : reads from a file format (see section 2.3)```  
 
-The build script will pipe all output from the program to stdout or the ```drawapp``` depending on the arguments.
+When using the build script, **you need to run your shell inside the same directory as the build script and specify the filenames relative to the build script as well**.
 
-## 1.2 Building and running without python
+## 2.2 Building and running without python
 
 Compile each source file into an object file:
 
@@ -47,28 +66,15 @@ Run the executable:
 
 > ```bin/<executable_name(.exe)>                  : default to random generation``` 
 > ```bin/<executable_name(.exe)> -random          : randomly generates a maze```  
-> ```bin/<executable_name(.exe)> -file <filename> : reads from a file format (see section 2.2)```  
+> ```bin/<executable_name(.exe)> -file <filename> : reads from a file format (see section 2.3)```  
 > ```bin/<executable_name(.exe)> -help            : displays all possible commands```  
 
-# Section 2 - Specifications
+## 2.3 File input format
 
-## 2.1 Folder structure
-
-The program consists of 5 folders, a build script (```build.py```), the drawing app (```drawapp-4.0.jar```), and this ```readme.md``` file.
-
-> ```/bin``` folder contains the binary executable  
-> ```/logs``` folder contains the logs of the stdout for each run of the build script, categorized into days.  
-> ```/obj``` folder contains the object files generated by the build script  
-> ```/src``` folder contains the source files  
-> ```/testFiles``` folder contains file input tests for the program. Which can be inputted to the program as such:  
-> ```bin/<executable_name(.exe)> -file ./testFiles/<test_file_name(.txt)>```  
-
-## 2.2 File input format
-
-When inputting through a file, the program uses the following file format:
+When inputting through a file, the program uses the following file format, an example is found in /testFiles/test_1.txt:
 
 ```
-arena_width arena_height arena_padding_size arena_background_color_0rgb arena_pixel_per_block_side
+arena_width arena_height arena_padding_size arena_background_color_0rgb arena_pixel_per_block_side max_obstacle_area_percentage max_marker_area_percentage
 arena_marker_count
 For the next <arena_marker_count> lines: (DO NOT INCLUDE THIS LINE)
 nth_marker_x nth_marker_y
@@ -79,58 +85,4 @@ arena_non_existent_tile_count
 For the next <arena_non_existent_tile_count> lines: (DO NOT INCLUDE THIS LINE)
 nth_non_existent_tile_x nth_non_existent_tile_y
 robot_home_x robot_home_y robot_start_x robot_start_y robot_initial_direction robot_border_color_0rgb robot_fill_color_0rgb\
-```
-
-## 2.3 Source file explanations
-
-There are a total of 9 source (```.c```) files within the project source folder (```src/```) each with a associated header (```.h```) file.
-
-> ```arena/arena.c``` : All operations relating to inner logic of arena  
-> ```arena/arena.h``` : Defines the arena struct and declares functions  
-
-> ```drawing/drawing.c``` : Handles the drawing of arena and robot  
-> ```drawing/drawing.h``` : Defines the drawing parameter structs for both arena and robot, and declares functions  
-
-> ```dynamicarray/dynamicarray.c``` : A dynamic array implementation which works on node_t pointers.  
-> ```dynamicarray/dynamicarray.h``` : Defines dynamic_array_t and node_t structs, and declares functions  
-
-> ```graphics/graphics.c``` : Essentially middleware for drawapp. Unchanged from the moodle version. I am including this despite the fact that the instructions tell us not to include it to ensure that the program builds and runs without more preparation than necessary.  
-> ```graphics/graphics.h``` : Declares drawing functions.  
-
-> ```maze/maze.c``` : Coordinates the drawing and interactions of the robot and the arena to solve the maze.  
-> ```maze/maze.h``` : Defines maze_t and maze_settings_t structs, and declares functions.  
-
-> ```minheap/minheap.c``` : A min-heap implementation that works on node_t pointers. This is used in A* search algorithm.  
-> ```minheap/minheap.h``` : Defines the related structs and declares functions.  
-
-> ```pathfinder/pathfinder.c``` : A* search implementation for pathfinding within the maze.  
-> ```pathfinder/pathfinder.h``` : Defines the related structs and declares functions.  
-
-> ```robot/robot.c``` : All operations relating to inner logic of robot  
-> ```robot/robot.h``` : Defines the related structs and declares functions.  
-
-> ```main.c``` : Handles arguments and inputs, creates a maze, and solves the maze  
-> ```defaults.h``` : Default values to be used in case of random maze generation  
-
-## 2.4 Program Flow
-
-1. The program either receives pre-prepared maze settings from a file or generates a random one using the default values in defaults.h.
-    1. If the input is invalid or a internal error occurs during random maze generation, program informs the user and exits.
-2. The program creates a maze based on the settnigs from step (1).
-    1. The program informs the user and exits if the maze generated from the settings is invalid.
-3. The program attemps to solve the maze.
-    1. The program gets the coordinates of the closest marker to the robot.
-    2. The program calculates the shortest distance path between the marker and the robot using A* search.
-    3. The robot goes to the closest marker by following the pre-calculated path and picks up the marker.
-    4. These steps are repeated until all markers are collected or until an error occurs.
-    5. Once all markers are collected, the robot returns to the home square and drops the markers, terminating the program.
-    6. If any error occurs during this phase, the robot attempts to return to the home square and terminates the program.
-
-# Section 3 - References
-
-- Dynamic array: https://www.enjoyalgorithms.com/blog/dynamic-array   
-- Min-Heap: https://www.geeksforgeeks.org/introduction-to-min-heap-data-structure/  
-- A* search explanation: https://en.wikipedia.org/wiki/A*_search_algorithm#:~:text=A*%20is%20an%20informed%20search,shortest%20time%2C%20etc.).  
-- A* search implementation explanation: https://www.geeksforgeeks.org/a-search-algorithm/  
-- Graphics library + drawapp: Moodle  
-- Used ChatGPT o1-preview for refactoring tasks and for genereting some parts of the build script. Exact places are marked in code.
+```  

@@ -46,7 +46,8 @@ maze_t *create_maze(maze_settings_t settings);
 int32_t validate_maze(maze_t *maze);
 void dispose_maze(maze_t *maze);
 void solve_maze(maze_t *maze);
-maze_settings_t generate_random_maze(uint32_t min_width, uint32_t max_width, uint32_t min_height, uint32_t max_height, uint32_t paddingSize, uint32_t backgroundColor0RGB, uint32_t pixelPerSide, uint32_t robotBorderColor0RGB, uint32_t robotFillColor0RGB);
+int32_t are_all_spaces_connected(arena_t *arena);
+maze_settings_t generate_random_maze(uint32_t minWidth, uint32_t maxWidth, uint32_t minHeight, uint32_t maxHeight, uint32_t paddingSize, uint32_t backgroundColor0RGB, uint32_t pixelPerSide, double maxObstacleAreaPercentage, double maxMarkerAreaPercentage, uint32_t robotBorderColor0RGB, uint32_t robotFillColor0RGB);
 void print_maze_settings(const maze_settings_t *settings);
 
 #endif

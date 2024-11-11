@@ -126,7 +126,7 @@ maze_settings_t read_settings_from_file(char *filename)
     }
 
     fscanf(file, "%u %u %u %u %u %x %x", &settings.robotHomeX, &settings.robotHomeY, &settings.robotStartX, &settings.robotStartY, &settings.robotInitialDirection, &settings.robotBorderColor0RGB, &settings.robotFillColor0RGB);
-    
+
     fclose(file);
 
     return settings;
@@ -136,11 +136,11 @@ maze_settings_t get_settings(int mode, char *filename)
 {
     maze_settings_t settings;
 
-    if(mode == 0) // Randomly generate
+    if(mode == 0)
     {
-        settings = generate_random_maze(MIN_WIDTH, MAX_WIDTH, MIN_HEIGHT, MAX_HEIGHT, PADDING_SIZE, BACKGROUND_COLOR, PIXEL_PER_SIDE, ROBOT_BORDER_COLOR, ROBOT_FILL_COLOR);
+        settings = generate_random_maze(MIN_WIDTH, MAX_WIDTH, MIN_HEIGHT, MAX_HEIGHT, PADDING_SIZE, BACKGROUND_COLOR, PIXEL_PER_SIDE, MAX_OBSTACLE_AREA_PERCENTAGE, MAX_MARKER_AREA_PERCENTAGE, ROBOT_BORDER_COLOR, ROBOT_FILL_COLOR);
     }
-    else if(mode == 1) // from file
+    else if(mode == 1)
     {
         settings = read_settings_from_file(filename);
     }
@@ -166,7 +166,7 @@ int main(int argc, char **argv)
 {  
     // Get input mode
     int mode = interpret_argv(argc, argv);
-    char *filename = 0;
+    char *filename = 0; // input file name if any
 
     if(mode == 1)
     {

@@ -1,6 +1,7 @@
 #include "./maze.h"
 #include "../pathfinder/pathfinder.h"
 #include "../graphics/graphics.h"
+#include "../queue/queue.h"
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -126,7 +127,7 @@ maze_t *create_maze(maze_settings_t settings)
 
 int32_t validate_maze(maze_t *maze)
 {
-    return maze && validate_maze_settings(maze->settings) && validate_arena(maze->arena) && validate_robot(maze->robot);
+    return maze && validate_maze_settings(maze->settings) && validate_arena(maze->arena) && validate_robot(maze->robot) && are_all_spaces_connected(maze->arena);
 }
 
 void dispose_maze(maze_t *maze)
@@ -182,6 +183,11 @@ void move_robot_in_directions(robot_t *robot, uint8_t *directions, int32_t size)
         forward(robot);
         update_robot();
         sleep(100);
+
+        if(atMarker(robot)) // if we happen to be on a marker as we are moving towards another one, pick it up
+        {
+            pickUpMarker(robot);
+        }
     }
 }
 
@@ -280,96 +286,216 @@ uint32_t generate_random_number(uint32_t min, uint32_t max)
     return (rand() % (max - min + 1)) + min;
 }
 
-maze_settings_t generate_random_maze(uint32_t minWidth, uint32_t maxWidth, uint32_t minHeight, uint32_t maxHeight, uint32_t paddingSize, uint32_t backgroundColor0RGB, uint32_t pixelPerSide, uint32_t robotBorderColor0RGB, uint32_t robotFillColor0RGB)
+void set_settings_parameters(maze_settings_t *settings, uint32_t minWidth, uint32_t maxWidth, uint32_t minHeight, uint32_t maxHeight, uint32_t paddingSize, uint32_t backgroundColor0RGB, uint32_t pixelPerSide, double maxObstacleAreaPercentage, double maxMarkerAreaPercentage, uint32_t robotBorderColor0RGB, uint32_t robotFillColor0RGB)
 {
     srand((unsigned int)time(0));
 
     uint32_t width = generate_random_number(minWidth, maxWidth);
     uint32_t height = generate_random_number(minHeight, maxHeight);
 
-    maze_settings_t settings;
-    memset(&settings, 0, sizeof(maze_settings_t));
+    width = width == 0 ? 1 : width;
+    height = height == 0 ? 1 : height;
 
-    if (width == 0 || height == 0) return settings;
+    settings->width = width;
+    settings->height = height;
+    settings->paddingSize = paddingSize;
+    settings->backgroundColor0RGB = backgroundColor0RGB;
+    settings->pixelPerSide = pixelPerSide;
+    settings->robotBorderColor0RGB = robotBorderColor0RGB;
+    settings->robotFillColor0RGB = robotFillColor0RGB;
 
-    settings.width = width;
-    settings.height = height;
-    settings.paddingSize = paddingSize;
-    settings.backgroundColor0RGB = backgroundColor0RGB;
-    settings.pixelPerSide = pixelPerSide;
-    settings.robotBorderColor0RGB = robotBorderColor0RGB;
-    settings.robotFillColor0RGB = robotFillColor0RGB;
-
-    uint32_t maxObstacles = (width * height) / 4;
+    uint32_t maxObstacles = (width * height) * maxObstacleAreaPercentage;
 
     uint32_t numObstacles = rand() % maxObstacles;
-    settings.obstacleCount = numObstacles;
-    settings.obstaclesX = malloc(numObstacles * sizeof(uint32_t));
-    settings.obstaclesY = malloc(numObstacles * sizeof(uint32_t));
+    settings->obstacleCount = numObstacles;
 
-    uint32_t maxMarkers = (width * height) / 10;
+    uint32_t maxMarkers = (width * height) * maxMarkerAreaPercentage;
 
     uint32_t numMarkers = (maxMarkers > 0) ? (rand() % maxMarkers) : 0; 
     numMarkers = numMarkers == 0 ? 1 : numMarkers; // minimum 1 marker.
-    settings.markerCount = numMarkers;
-    settings.markersX = malloc(numMarkers * sizeof(uint32_t));
-    settings.markersY = malloc(numMarkers * sizeof(uint32_t));
+    settings->markerCount = numMarkers;
 
-    settings.nonExistentCount = 0;
-    settings.nonExistentX = 0;
-    settings.nonExistentY = 0;
-    
-    arena_t *arena = create_arena(width, height);
-    for (uint32_t i = 0; i < numObstacles;)
-    {
-        uint32_t x = rand() % width;
-        uint32_t y = rand() % height;
+    settings->nonExistentCount = 0;
+    settings->nonExistentX = 0;
+    settings->nonExistentY = 0;
+}
 
-        if (get_tile(arena, x, y) != 0x00)
-            continue;
-
-        settings.obstaclesX[i] = x;
-        settings.obstaclesY[i] = y;
-        set_tile(arena, x, y, 0x01);
-        i++;
-    }
-
-    for (uint32_t i = 0; i < numMarkers;)
-    {
-        uint32_t x = rand() % width;
-        uint32_t y = rand() % height;
-
-        if (get_tile(arena, x, y) != 0x00)
-            continue;
-
-        settings.markersX[i] = x;
-        settings.markersY[i] = y;
-        set_tile(arena, x, y, 0x02);
-        i++;
-    }
-
-    uint32_t homeX = rand() % width;
-    uint32_t homeY = rand() % height;
-    uint32_t startX = rand() % width;
-    uint32_t startY = rand() % height;
+void set_random_robot(arena_t *arena, maze_settings_t *settings)
+{
+    uint32_t homeX = rand() % arena->width;
+    uint32_t homeY = rand() % arena->height;
+    uint32_t startX = rand() % arena->width;
+    uint32_t startY = rand() % arena->height;
 
     while((get_tile(arena, homeX, homeY) != 0x00 || get_tile(arena, startX, startY) != 0x00) || (homeX == startX && homeY == startY))
     {
-        homeX = rand() % width;
-        homeY = rand() % height;
-        startX = rand() % width;
-        startY = rand() % height;
+        homeX = rand() % arena->width;
+        homeY = rand() % arena->height;
+        startX = rand() % arena->width;
+        startY = rand() % arena->height;
     }
 
-    settings.robotHomeX = homeX;
-    settings.robotHomeY = homeY;
-    settings.robotStartX = startX;
-    settings.robotStartY = startY;
+    settings->robotHomeX = homeX;
+    settings->robotHomeY = homeY;
+    settings->robotStartX = startX;
+    settings->robotStartY = startY;
+}
+
+void set_random_markers(arena_t *arena, maze_settings_t *settings)
+{
+    settings->markersX = malloc(settings->markerCount * sizeof(uint32_t));
+    settings->markersY = malloc(settings->markerCount * sizeof(uint32_t));
+
+    for (uint32_t i = 0; i < settings->markerCount;)
+    {
+        uint32_t x = rand() % arena->width;
+        uint32_t y = rand() % arena->height;
+
+        if (get_tile(arena, x, y) != 0x00)
+            continue;
+
+        settings->markersX[i] = x;
+        settings->markersY[i] = y;
+        set_tile(arena, x, y, 0x02);
+
+        i++;
+    }
+}
+
+void bfs(arena_t *arena, uint32_t *visited, uint32_t startX, uint32_t startY) 
+{
+    if(arena == 0 || startX > arena->width - 1 || startY > arena->height - 1 || visited == 0)
+    {
+        return;
+    }
+
+    queue_t *queue = create_queue(arena->width * arena->height);
+
+    enqueue(queue, startX, startY);
+    visited[startX + startY * arena->width] = 1;
+    
+    while (!is_queue_empty(queue)) 
+    {
+        queue_node_t node = dequeue(queue);
+        int x = node.x;
+        int y = node.y;
+        
+        int dX[] = {-1, 1, 0, 0}; // x directions
+        int dY[] = {0, 0, -1, 1}; // y directions
+
+        for (int i = 0; i < 4; i++) 
+        {
+            int newX = x + dX[i];
+            int newY = y + dY[i];
+            
+            if (newX >= 0 && newX < arena->width && newY >= 0 && newY < arena->height && 
+                !visited[newX + newY * arena->width] && (get_tile(arena, newX, newY) == 0x02 || get_tile(arena, newX, newY) == 0x00)) 
+            {    
+                visited[newX + newY * arena->width] = 1;
+                enqueue(queue, newX, newY);
+            }
+        }
+    }
+
+    dispose_queue(queue);
+}
+
+int32_t are_all_spaces_connected(arena_t *arena)
+{
+    if(arena == 0)
+    {
+        return 0;
+    }
+
+    uint32_t *visited = calloc(arena->width * arena->height, sizeof(uint32_t));
+    
+    for (int x = 0; x < arena->width; x++) 
+    {
+        for (int y = 0; y < arena->height; y++) 
+        {
+            if (get_tile(arena, x, y) == 0x02 || get_tile(arena, x, y) == 0x00) 
+            {
+                bfs(arena, visited, x, y);
+                goto bfs_completed; // OMG A VALID GOTO STATEMENT
+            }
+        }
+    }
+
+bfs_completed:
+
+    for (int x = 0; x < arena->width; x++) 
+    {
+        for (int y = 0; y < arena->height; y++) 
+        {
+            if ((get_tile(arena, x, y) == 0x02 || get_tile(arena, x, y) == 0x00) && visited[x + y * arena->width] != 1) 
+            {
+                free(visited);
+                return 0;
+            }
+        }
+    }
+    
+    free(visited);
+    return 1;
+}
+
+void set_random_obstacles(arena_t *arena, maze_settings_t *settings)
+{
+    settings->obstaclesX = malloc(settings->obstacleCount * sizeof(uint32_t));
+    settings->obstaclesY = malloc(settings->obstacleCount * sizeof(uint32_t));
+
+    uint32_t trialCount = 0;
+    for (uint32_t i = 0; i < settings->obstacleCount;)
+    {
+        uint32_t x = rand() % arena->width;
+        uint32_t y = rand() % arena->height;
+
+        if (get_tile(arena, x, y) != 0x00) 
+        {
+            continue;
+        }
+
+        settings->obstaclesX[i] = x;
+        settings->obstaclesY[i] = y;
+        set_tile(arena, x, y, 0x01);
+
+        if (are_all_spaces_connected(arena) == 0 && trialCount < 1000) // if this obstacle makes it so that we cannot reach a tile, regenerate it, try a 1000 times before giving up.
+        {
+            // revert the changes
+            settings->obstaclesX[i] = 0;
+            settings->obstaclesY[i] = 0;
+            set_tile(arena, x, y, 0x00);
+            trialCount++;
+            continue;
+        }
+        
+        trialCount = 0;
+        i++;
+    }
+}
+
+maze_settings_t generate_random_maze(uint32_t minWidth, uint32_t maxWidth, uint32_t minHeight, uint32_t maxHeight, uint32_t paddingSize, uint32_t backgroundColor0RGB, uint32_t pixelPerSide, double maxObstacleAreaPercentage, double maxMarkerAreaPercentage, uint32_t robotBorderColor0RGB, uint32_t robotFillColor0RGB)
+{
+    maze_settings_t settings;
+    memset(&settings, 0, sizeof(maze_settings_t));
+
+    if (minWidth == 0 || maxWidth == 0 || minWidth > maxWidth || pixelPerSide == 0) 
+    {
+        return settings;
+    }
+    
+    set_settings_parameters(&settings, minWidth, maxWidth, minHeight, maxHeight, paddingSize, backgroundColor0RGB, pixelPerSide, maxObstacleAreaPercentage, maxMarkerAreaPercentage, robotBorderColor0RGB, robotFillColor0RGB);
+    
+    arena_t *arena = create_arena(settings.width, settings.height);
+
+    set_random_markers(arena, &settings);
+    set_random_obstacles(arena, &settings);
+    set_random_robot(arena, &settings);
 
     dispose_arena(arena);
 
-    if(!validate_maze_settings(settings)) // if settings are somehow invalid
-        return generate_random_maze(minWidth, maxWidth, minHeight, maxHeight, paddingSize, backgroundColor0RGB, pixelPerSide, robotBorderColor0RGB, robotFillColor0RGB);
+    if(!validate_maze_settings(settings)) // if settings are somehow invalid, regenerate
+        return generate_random_maze(minWidth, maxWidth, minHeight, maxHeight, paddingSize, backgroundColor0RGB, pixelPerSide, maxObstacleAreaPercentage, maxMarkerAreaPercentage, robotBorderColor0RGB, robotFillColor0RGB);
     return settings;
 }
 

@@ -1,10 +1,10 @@
 # Section 1 - Program Explanation
 
-## 2.1 Overview
+## 1.1 Overview
 
 This program is designed to generate and solve mazes using a simulated robotic agent. The robot navigates through obstacles, locates markers scattered throughout the maze using the A* search algorithm, and collects them before returning to its home position. The program can either generate a random maze based on predefined defaults or accept a maze configuration from a file in a specified format. 
 
-## 2.2 Program Flow
+## 1.2 Program Flow
 
 1. The program either receives pre-prepared maze settings from a file or generates a random one using the default values in defaults.h.
     1. If the input is invalid or a internal error occurs during random maze generation, program informs the user and exits.
